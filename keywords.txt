@@ -12,7 +12,7 @@
 
 begin			KEYWORD2
 readData		KEYWORD2
-data			KEYWORD2
+get			    KEYWORD2
 
 #######################################
 # Instances		(KEYWORD2)
@@ -22,3 +22,10 @@ IMU383Z			KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+AX 				LITERAL1
+AY 				LITERAL1
+AZ 				LITERAL1
+GX 				LITERAL1
+GY 				LITERAL1
+GZ 				LITERAL1
+TEMP			LITERAL1

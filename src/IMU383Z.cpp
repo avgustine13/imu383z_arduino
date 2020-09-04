@@ -1,4 +1,16 @@
 #include "IMU383Z.h"
+#include <SPI.h>
+
+static IMU383Z* imuPtr = nullptr;
+/**************************************************************************/
+static void imuReadDataIRQ()
+/**************************************************************************/
+{
+	if (imuPtr != nullptr)
+	{
+		imuPtr->readData();
+	}
+}
 
 /**************************************************************************/
 IMU383Z::IMU383Z(int _csPin, int _drdyPin)
@@ -9,34 +21,78 @@ IMU383Z::IMU383Z(int _csPin, int _drdyPin)
 }
 
 /**************************************************************************/
-IMU383Z::begin()
+void IMU383Z::begin()
 /**************************************************************************/
 {
-	 SPI.begin();
-	 SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
-	 pinMode(csPin, OUTPUT);
+	pinMode(csPin, OUTPUT);	 
+	reset();
 	 
-	 if (drdyPin) {
-		 pinMode(drdyPin, INPUT);
-		 attachInterrupt(digitalPinToInterrupt(drdyPin), readData, RISING);
-	 }
-	 
+	if (drdyPin) {
+		pinMode(drdyPin, INPUT);
+		char irqNum = digitalPinToInterrupt(drdyPin);  //If 2 is passed and you are compiling for an UNO you irqNum should be 0.
+		if (irqNum != NOT_AN_INTERRUPT)
+		{
+			imuPtr = this;
+			attachInterrupt(irqNum, imuReadDataIRQ, RISING);
+		}
+	}
 }
 
 /**************************************************************************/
-IMU383Z::readData()
+void IMU383Z::reset()
+/**************************************************************************/
+{
+	uint8_t buf[CONTROL_SIZE] = {0};
+	buf[0] = 0x78;
+	transferSPI(buf, CONTROL_SIZE);
+	memset(buf, 0, CONTROL_SIZE);
+	buf[0] = 0x7A;
+    buf[1] = 0x01;
+    transferSPI(buf, CONTROL_SIZE);
+	memset(buf, 0, CONTROL_SIZE);     
+    buf[0] = 0x78;
+	transferSPI(buf, CONTROL_SIZE);
+	memset(buf, 0, CONTROL_SIZE);      
+    buf[0] = 0x7A;
+    buf[2] = 0x06;
+	transferSPI(buf, CONTROL_SIZE);
+	memset(buf, 0, CONTROL_SIZE);            
+    buf[0] = 0x78;
+	transferSPI(buf, CONTROL_SIZE);     
+}
+
+/**************************************************************************/
+void IMU383Z::readData()
 /**************************************************************************/
 {
 	uint8_t buf[DATA_SIZE] = {0};
 	buf[0] = 0x3E;
     buf[1] = 0x00;
-    for (int i = 0; i < DATA_SIZE/2; i++) {
+    transferSPI(buf, DATA_SIZE);
+	parseData(buf);
+}
+
+/**************************************************************************/
+float IMU383Z::get(uint8_t paramId)
+/**************************************************************************/
+{
+	if (paramId < IMU383_PARAM_COUNT) {
+		return data[paramId];
+	}
+}
+
+/**************************************************************************/
+void IMU383Z::transferSPI(uint8_t* buf, uint8_t size)
+/**************************************************************************/
+{
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
+	for (int i = 0; i < size/2; i++) {
         digitalWrite(csPin, LOW);        
         SPI.transfer(buf + i*2, 2);
         digitalWrite(csPin, HIGH);        
         delayMicroseconds(FRAME_DELAY);        
     }
-	parseData(buf);
+	SPI.endTransaction(); 
 }
 
 /**************************************************************************/
