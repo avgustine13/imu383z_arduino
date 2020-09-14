@@ -35,7 +35,7 @@ class IMU383Z
 		float ay();
 		float az();
 		float temp();
-		uint8_t* data();  //pointer to data buffer
+		void toExtBuffer(uint8_t* extPtr); 
 		
 	private:				
 		int s16(uint8_t* ui8);
