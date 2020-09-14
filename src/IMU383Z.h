@@ -21,18 +21,6 @@
 #include <WProgram.h>
 #endif
 
-enum {
-	AX = 0,
-	AY,
-	AZ,
-	GX,
-	GY,
-	GZ,
-	TEMP,
-	//
-	IMU383_PARAM_COUNT
-};
-
 class IMU383Z 
 {
 	public:
@@ -40,7 +28,15 @@ class IMU383Z
 		void begin();
 		void reset();
 		void readData();
-		float get(uint8_t paramId);
+		float gx();
+		float gy();
+		float gz();
+		float ax();
+		float ay();
+		float az();
+		float temp();
+		uint8_t* data();  //pointer to data buffer
+		
 	private:				
 		int s16(uint8_t* ui8);
 		float getTemp(uint8_t* ui8);
@@ -49,12 +45,12 @@ class IMU383Z
 		void transferSPI(uint8_t* buffer, uint8_t size);
 		void parseData(uint8_t* buffer);
 		
-		const int DATA_SIZE   	= 18;
+		static const int DATA_SIZE   	= 18;
 		const int CONTROL_SIZE  = 4;
 		const int FRAME_DELAY 	= 20;
 		int csPin;
-		int drdyPin;		
-		float data[IMU383_PARAM_COUNT] = {0};
+		int drdyPin;
+		uint8_t dataBuffer[DATA_SIZE] = {0};
 };
 
 #endif

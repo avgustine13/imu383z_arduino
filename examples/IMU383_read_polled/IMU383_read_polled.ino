@@ -18,18 +18,18 @@ void setup() {
 void loop() {
   imu.readData();
   Serial.print("[AX AY AZ] - ");
-  Serial.print(imu.get(AX));
+  Serial.print(imu.ax());
   Serial.print(" ");
-  Serial.print(imu.get(AY));
+  Serial.print(imu.ay());
   Serial.print(" ");
-  Serial.println(imu.get(AZ));
+  Serial.println(imu.az());
   Serial.print("[GX GY GZ] - ");
-  Serial.print(imu.get(GX));
+  Serial.print(imu.gx());
   Serial.print(" ");
-  Serial.print(imu.get(GY));
+  Serial.print(imu.gy());
   Serial.print(" ");
-  Serial.println(imu.get(GZ));
+  Serial.println(imu.gz());
   Serial.print("Temp - ");
-  Serial.println(imu.get(TEMP));  
+  Serial.println(imu.temp());  
   delay(1000);
 }

@@ -12,7 +12,13 @@
 
 begin			KEYWORD2
 readData		KEYWORD2
-get			    KEYWORD2
+gx			KEYWORD2
+gy			KEYWORD2
+gz			KEYWORD2
+ax			KEYWORD2
+ay			KEYWORD2
+az			KEYWORD2
+temp 			KEYWORD2
 
 #######################################
 # Instances		(KEYWORD2)
