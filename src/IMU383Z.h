@@ -38,7 +38,7 @@ class IMU383Z
 		void toExtBuffer(uint8_t* extPtr); 
 		
 	private:				
-		int s16(uint8_t* ui8);
+		int16_t s16(uint8_t* ui8);
 		float getTemp(uint8_t* ui8);
 		float getAcc(uint8_t* ui8);
 		float getRate(uint8_t* ui8);
